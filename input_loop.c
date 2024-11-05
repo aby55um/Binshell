@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "command_parser.h"
 
 #define CMD_SIZE 100
 
@@ -11,5 +12,7 @@ void input_loop(){
 
 		printf(">>> ");
 		fgets(command,buf_size,stdin);
+
+		execute(command);
 	}
 }	
