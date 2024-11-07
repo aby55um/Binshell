@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "command_execute.h"
 
-void parse(char *command){
+char** parse(char *command){
 
 	int command_length = strlen(command)-1;
 
@@ -42,8 +43,11 @@ void parse(char *command){
 		token_list_size++;
 		token = strtok(NULL, " ");
 	}
+
+	return token_list;
 }
 
 void execute(char *command){
-	parse(command);
+	char** token_list = parse(command);
+	execute_command(token_list);
 }
