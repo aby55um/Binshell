@@ -17,7 +17,7 @@ void parse(char *command){
 			clean_command[index]=command[i];
 			index++;
 		}
-		else if(command[i]!=' ' || command[i]==' ' && command[i-1]!=' '){
+		else if(command[i] != ' ' || command[i]==' ' && command[i-1]!=' '){
 			clean_command[index]=command[i];
 			index++;
 		}
@@ -26,10 +26,22 @@ void parse(char *command){
 		clean_command[index-1]='\0';
 	}
 
-	/*char *args[command_length];
+	//tokenization
+	char **token_list = malloc(sizeof(char *));
+	int token_list_size = 1;
 
-	char *token = strtok(command," ");
-	printf("%s",token);*/
+	char *token;
+	token = strtok(command," ");
+	
+	index = 0;
+	while(token != NULL){
+		*(token_list + index) = malloc(strlen(token) * sizeof(char));
+		*(token_list + index) = token;
+		index++;
+		token_list = realloc(token_list, (token_list_size + 1) * sizeof(char *));
+		token_list_size++;
+		token = strtok(NULL, " ");
+	}
 }
 
 void execute(char *command){

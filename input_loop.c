@@ -1,3 +1,5 @@
+//todo: implement reallocation
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "command_parser.h"
