@@ -8,7 +8,7 @@
 #define CMD_SIZE 100
 
 void input_loop(){
-	while(state == 1){
+	while(state > 0){
 
 		int buf_size = CMD_SIZE * sizeof(char);
 		char *command = malloc(buf_size);

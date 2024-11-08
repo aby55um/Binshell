@@ -36,13 +36,16 @@ char** parse(char *command){
 	
 	index = 0;
 	while(token != NULL){
-		*(token_list + index) = malloc(strlen(token) * sizeof(char));
+		*(token_list + index) = malloc((strlen(token)) * sizeof(char));
 		*(token_list + index) = token;
 		index++;
-		token_list = realloc(token_list, (token_list_size + 1) * sizeof(char *));
+		if(token_list_size>1){
+			token_list = realloc(token_list, (token_list_size + 1) * sizeof(char *));
+		}
 		token_list_size++;
 		token = strtok(NULL, " ");
-	}
+	}	
+	token_list[token_list_size-2][strlen(token_list[token_list_size-2])-1] = '\0';
 
 	return token_list;
 }
