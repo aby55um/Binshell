@@ -13,7 +13,7 @@ void input_loop(){
 		int buf_size = CMD_SIZE * sizeof(char);
 		char *command = malloc(buf_size);
 
-		printf(">>> ");
+		printf("> ");
 		fgets(command,buf_size,stdin);
 
 		execute(command);

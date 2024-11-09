@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "variables.h"
 
-#define number_of_commands 1
+#define number_of_commands 3
 
-char* commands[] = {"exit"};
+char* commands[] = {"exit", "help", "analyze"};
+
+char command_list_string[] = "\nCommands:\n\nexit: exit shell\nhelp: print this message\nanalyze [filename] analyze the file with name [filename]\n\n";
 
 char* current_command;
 
@@ -24,5 +27,22 @@ void execute_command(char** token_list){
 		{
 			state = 0;
 		} break;
+	case 1:
+		{
+			printf("%s",command_list_string);
+		} break;
+	case 2:
+		{
+			if(access(token_list[1],F_OK)==0){
+				printf("File exists\n");
+			}
+			else{
+				printf("File does not exist\n");
+			}
+		} break;
+	default:
+		{
+			printf("Command not found\n");
+		}
 	}
 }
