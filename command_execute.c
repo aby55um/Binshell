@@ -7,7 +7,7 @@
 
 char* commands[] = {"exit", "help", "analyze"};
 
-char command_list_string[] = "\nCommands:\n\nexit: exit shell\nhelp: print this message\nanalyze [filename] analyze the file with name [filename]\n\n";
+char command_list_string[] = "\nCommands:\n\nexit: exit shell\nhelp: print this message\nanalyze [filename]: analyze the file with name [filename]\n\n";
 
 char* current_command;
 
@@ -42,7 +42,8 @@ void execute_command(char** token_list){
 		} break;
 	default:
 		{
-			printf("Command not found\n");
+			printf("\nCommand not found\n");
+			printf("%s",command_list_string);
 		}
 	}
 }
