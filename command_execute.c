@@ -34,7 +34,12 @@ void execute_command(char** token_list){
 	case 2:
 		{
 			if(access(token_list[1],F_OK)==0){
-				printf("File exists\n");
+				FILE *file = fopen(token_list[1],"r");
+				char line[5];  
+				fgets(line, sizeof(line)+1, file);
+				if(line[0]==0x7f && line[1]=='E' && line[2]=='L' && line[3]=='F'){
+					printf("File format: ELF\n");
+				} 
 			}
 			else{
 				printf("File does not exist\n");
