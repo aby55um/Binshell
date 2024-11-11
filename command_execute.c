@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "variables.h"
@@ -35,7 +36,7 @@ void execute_command(char** token_list){
 		{
 			if(access(token_list[1],F_OK)==0){
 				FILE *file = fopen(token_list[1],"r");
-				char line[5];  
+				char line[4];  
 				fgets(line, sizeof(line)+1, file);
 				//Check if ELF file
 				if(line[0]==0x7f && line[1]=='E' && line[2]=='L' && line[3]=='F'){
@@ -43,11 +44,14 @@ void execute_command(char** token_list){
 					//Check if 32 or 64 bit file
 					char header_bytes[2];
 					fgets(header_bytes,3,file);
+					int remaining_header_size;
 					if(header_bytes[0]==1){
 						printf("32 bit\n");
+						remaining_header_size = 46;
 					}
 					if(header_bytes[0]==2){
 						printf("64 bit\n");
+						remaining_header_size = 58;
 					}
 					if(header_bytes[1]==1){
 						printf("Little endian\n\n");
@@ -55,6 +59,11 @@ void execute_command(char** token_list){
 					if(header_bytes[1]==2){
 						printf("Big endian\n\n");
 					}
+					/*char *remaining_header = malloc(remaining_header_size * sizeof(char));
+					fgets(remaining_header, remaining_header_size + 1,file);
+					for(int i=0;i<remaining_header_size;i++){ 
+						printf("%d",remaining_header[i]);
+					}*/
 				}
 
 			}
