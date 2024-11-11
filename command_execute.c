@@ -37,9 +37,26 @@ void execute_command(char** token_list){
 				FILE *file = fopen(token_list[1],"r");
 				char line[5];  
 				fgets(line, sizeof(line)+1, file);
+				//Check if ELF file
 				if(line[0]==0x7f && line[1]=='E' && line[2]=='L' && line[3]=='F'){
-					printf("File format: ELF\n");
-				} 
+					printf("\nFile format: ELF\n");
+					//Check if 32 or 64 bit file
+					char header_bytes[2];
+					fgets(header_bytes,3,file);
+					if(header_bytes[0]==1){
+						printf("32 bit\n");
+					}
+					if(header_bytes[0]==2){
+						printf("64 bit\n");
+					}
+					if(header_bytes[1]==1){
+						printf("Little endian\n\n");
+					}
+					if(header_bytes[1]==2){
+						printf("Big endian\n\n");
+					}
+				}
+
 			}
 			else{
 				printf("File does not exist\n");
