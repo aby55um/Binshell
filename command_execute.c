@@ -54,16 +54,23 @@ void execute_command(char** token_list){
 						remaining_header_size = 58;
 					}
 					if(header_bytes[1]==1){
-						printf("Little endian\n\n");
+						printf("Little endian\n");
 					}
 					if(header_bytes[1]==2){
-						printf("Big endian\n\n");
+						printf("Big endian\n");
 					}
-					/*char *remaining_header = malloc(remaining_header_size * sizeof(char));
+					char *remaining_header = malloc(remaining_header_size * sizeof(char));
 					fgets(remaining_header, remaining_header_size + 1,file);
+					printf("Debug:\n");
 					for(int i=0;i<remaining_header_size;i++){ 
+						printf("%d|",remaining_header[i]);
+					}
+					printf("\n");
+					/*printf("Program entry: 0x");
+					for(int i=19;i<27;i++){
 						printf("%d",remaining_header[i]);
-					}*/
+					}
+					printf("\n");*/
 				}
 
 			}
