@@ -36,7 +36,7 @@ void execute_command(char** token_list){
 		{
 			if(access(token_list[1],F_OK)==0){
 				FILE *file = fopen(token_list[1],"r");
-				char line[4];  
+				unsigned char line[4];  
 				fgets(line, sizeof(line)+1, file);
 				//Check if ELF file
 				if(line[0]==0x7f && line[1]=='E' && line[2]=='L' && line[3]=='F'){
@@ -59,18 +59,17 @@ void execute_command(char** token_list){
 					if(header_bytes[1]==2){
 						printf("Big endian\n");
 					}
-					char *remaining_header = malloc(remaining_header_size * sizeof(char));
+					unsigned char *remaining_header = malloc(remaining_header_size * sizeof(char));
 					fgets(remaining_header, remaining_header_size + 1,file);
+
+					//printf("");
+
+					printf("Todo: Test for big endian files!\n");
 					printf("Debug:\n");
 					for(int i=0;i<remaining_header_size;i++){ 
-						printf("%d|",remaining_header[i]);
+						printf("%d: %x|",i+6,remaining_header[i]);
 					}
 					printf("\n");
-					/*printf("Program entry: 0x");
-					for(int i=19;i<27;i++){
-						printf("%d",remaining_header[i]);
-					}
-					printf("\n");*/
 				}
 
 			}
