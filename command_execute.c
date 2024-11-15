@@ -21,6 +21,19 @@ int translate_command(char* current_command){
 	return -1;
 }
 
+void little_endian_read(unsigned char* list,int index,int size){
+	int zero_byte = 0;
+	for(int i=0;i<size;i++){
+		if(list[index-i]!=0){
+			zero_byte = 1;
+		}
+		if(zero_byte!=0){
+			printf("%x",list[index-i]);
+		}
+	}
+	printf("\n");
+}
+
 void execute_command(char** token_list){
 	current_command = token_list[0];
 	switch(translate_command(current_command)){
@@ -69,44 +82,25 @@ void execute_command(char** token_list){
 					unsigned char *remaining_header = malloc(remaining_header_size * sizeof(char));
 					fgets(remaining_header, remaining_header_size + 1,file);
 
-					// Program entry
-					printf("Program entry: 0x");
 					int index;
-					if(b32){
+
+					// Program entry offset
+					printf("Program entry: 0x");
+					if(b64){
+						index = 25;
+					} else if(b32){
 						index = 21;
 					}
-					else if(b64){
-						index = 25;
-					}
-					int zero = 0;
-					for(int i=0;i<8;i++){
-						if(remaining_header[index-i]!=0){
-							zero = 1;
-						}
-						if(zero!=0){
-							printf("%x",remaining_header[index-i]);
-						}
-					}
-					printf("\n");
-
+					little_endian_read(remaining_header,index,address_size);
+					
+					// Program header offset
 					printf("Program header: 0x");
-					zero = 0;
-					if(b32){
+					if(b64){
+						index = 33;
+					} else if(b32){
 						index = 25;
 					}
-					else if(b64){
-						index = 33;
-					}
-					zero = 0;
-					for(int i=0;i<8;i++){
-						if(remaining_header[index-i]!=0){
-							zero = 1;
-						}
-						if(zero!=0){
-							printf("%x",remaining_header[index-i]);
-						}
-					}
-
+					little_endian_read(remaining_header,index,address_size);
 					
 					
 					printf("\n\nTodo: Test for big endian files!\n");
