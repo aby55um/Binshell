@@ -80,15 +80,35 @@ void execute_command(char** token_list){
 					}
 					int zero = 0;
 					for(int i=0;i<8;i++){
-						if(remaining_header[25-i]!=0){
+						if(remaining_header[index-i]!=0){
 							zero = 1;
 						}
 						if(zero!=0){
-							printf("%x",remaining_header[25-i]);
+							printf("%x",remaining_header[index-i]);
 						}
 					}
 					printf("\n");
 
+					printf("Program header: 0x");
+					zero = 0;
+					if(b32){
+						index = 25;
+					}
+					else if(b64){
+						index = 33;
+					}
+					zero = 0;
+					for(int i=0;i<8;i++){
+						if(remaining_header[index-i]!=0){
+							zero = 1;
+						}
+						if(zero!=0){
+							printf("%x",remaining_header[index-i]);
+						}
+					}
+
+					
+					
 					printf("\n\nTodo: Test for big endian files!\n");
 					printf("Debug:\n");
 					for(int i=0;i<remaining_header_size;i++){ 
