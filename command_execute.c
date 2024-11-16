@@ -99,7 +99,7 @@ void execute_command(char** token_list){
 					little_endian_read(remaining_header,index,address_size,0);
 					
 					// Program header offset
-					printf("Program header table: 0x");
+					printf("Program header table offset: 0x");
 					if(b64){
 						index = 33;
 					} else if(b32){
@@ -108,7 +108,7 @@ void execute_command(char** token_list){
 					little_endian_read(remaining_header,index,address_size,0);
 					
 					// Section header table offset
-					printf("Section header table: 0x");
+					printf("Section header table offset: 0x");
 					if(b64){
 						index = 41;
 					} else if(b32){
@@ -133,6 +133,16 @@ void execute_command(char** token_list){
 						index = 41;
 					}
 					little_endian_read(remaining_header,index,2,1);
+
+					// Section index to the section header string table
+					printf("Section index to the section header string table: 0x");
+					if(b64){
+						index = 57;
+					} else if(b32){
+						index = 45;
+					}
+					little_endian_read(remaining_header,index,2,0);
+
 
 					printf("\n\nTodo: Test for big endian files!\n");
 					printf("Debug:\n");
