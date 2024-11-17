@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 #include "variables.h"
 
 #define number_of_commands 3
@@ -105,6 +106,10 @@ void execute_command(char** token_list){
 					} else if(b32){
 						index = 25;
 					}
+					unsigned long long int program_header_offset = 0;
+					for(int i=0;i<address_size;i++){
+						program_header_offset += (unsigned long long int)remaining_header[index-address_size+1+i]*(unsigned long long int)pow(256,(double)(i));
+					}
 					little_endian_read(remaining_header,index,address_size,0);
 					
 					// Section header table offset
@@ -142,6 +147,17 @@ void execute_command(char** token_list){
 						index = 45;
 					}
 					little_endian_read(remaining_header,index,2,0);
+
+					// Program header entry size
+					unsigned char ch_ptr_program_header_entry_size[2];
+					if(b64){
+						index = 56;
+					} else if(b32){
+						index = 44;
+					}
+					unsigned int program_header_entry_size = (unsigned int)remaining_header[index-6] + (unsigned int)remaining_header[index-7];
+					printf("\nprogram header entry size: %u",program_header_entry_size);
+
 
 
 					printf("\n\nTodo: Test for big endian files!\n");
