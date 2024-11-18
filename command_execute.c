@@ -148,23 +148,42 @@ void execute_command(char** token_list){
 					}
 					little_endian_read(remaining_header,index,2,0);
 
-					// Program header entry size
-					unsigned char ch_ptr_program_header_entry_size[2];
+					// Number of program header entries
+					unsigned char ch_ptr_program_header_entry_num[2];
 					if(b64){
 						index = 56;
 					} else if(b32){
 						index = 44;
 					}
-					unsigned int program_header_entry_size = (unsigned int)remaining_header[index-6] + (unsigned int)remaining_header[index-7];
-					printf("\nprogram header entry size: %u",program_header_entry_size);
+					unsigned int program_header_entry_num = (unsigned int)remaining_header[index-6] + (unsigned int)remaining_header[index-7] * 256;
 
+					// Program header entry size
+					unsigned char ch_ptr_program_header_entry_size[2];
+					if(b64){
+						index = 54;
+					} else if(b32){
+						index = 42;
+					}
+					unsigned int program_header_entry_size = (unsigned int)remaining_header[index-6] + (unsigned int)remaining_header[index-7] * 256;
 
+					// Todo: make it work for files that have program entry offset other than 64
+					if(program_header_offset!=64){
+						break;
+					}
+
+					unsigned char *program_header = malloc(program_header_entry_num * program_header_entry_size * sizeof(char));
+					fgets(program_header, program_header_entry_num * program_header_entry_size ,file);
+
+					/*printf("Program header bytes:\n");
+					for(int i=0;i<program_header_entry_num * program_header_entry_size;i++){
+						printf(" %d: %x | ",i+64,program_header[i]);
+					}			
 
 					printf("\n\nTodo: Test for big endian files!\n");
 					printf("Debug:\n");
 					for(int i=0;i<remaining_header_size;i++){ 
 						printf(" %d: %x|",i+6,remaining_header[i]);
-					}
+					}*/
 					printf("\n");
 				}
 
