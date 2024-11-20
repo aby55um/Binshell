@@ -174,9 +174,22 @@ void execute_command(char** token_list){
 					unsigned char *program_header = malloc(program_header_entry_num * program_header_entry_size * sizeof(char));
 					fgets(program_header, program_header_entry_num * program_header_entry_size ,file);
 
+					unsigned long long int section_types[program_header_entry_num];
+					unsigned long long int section_offset[program_header_entry_num];
 					for(int i=0;i<program_header_entry_num;i++){
-						printf("First three bytes of the %d header entry: %x%x%x%x\n",i+1,program_header[program_header_entry_size*i],program_header[program_header_entry_size*i+1],program_header[program_header_entry_size*i+2],program_header[program_header_entry_size*i+3]);
+						section_types[i]=0;
+						section_offset[i]=0;
 					}
+
+					for(int i=0;i<program_header_entry_num;i++){
+						for(int j=0;j<4;j++){
+							section_types[i]+=program_header[program_header_entry_size*i+j]*pow(256,(double)j);
+						}
+						//printf("First four bytes of the %d header entry: 0x%llx\n",i,section_types[i]);
+					}
+
+					// Close and reopen the file
+					fclose(file);		
 
 					/*printf("Program header bytes:\n");
 					for(int i=0;i<program_header_entry_num * program_header_entry_size;i++){
