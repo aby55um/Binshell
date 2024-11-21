@@ -172,6 +172,17 @@ void execute_command(char** token_list){
 					}
 					unsigned int program_header_entry_size = (unsigned int)remaining_header[index-6] + (unsigned int)remaining_header[index-7] * 256;
 
+					// Section header entry size
+					unsigned long long int section_header_entry_size = 0;
+					if(b64){
+						index = 53;
+					} else if(b32){
+						index = 42;
+					}
+					section_header_entry_size = remaining_header[index-1] + remaining_header[index];
+					//printf("Section header entry size: %lld\n",section_header_entry_size);
+					//little_endian_read(remaining_header,index,2,1);
+
 					// Todo: make it work for files that have program entry offset other than 64
 					if(program_header_offset!=64){
 						break;
