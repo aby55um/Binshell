@@ -147,6 +147,7 @@ void execute_command(char** token_list){
 						index = 45;
 					}
 					little_endian_read(remaining_header,index,2,0);
+					printf("\n");
 
 					// Number of program header entries
 					unsigned char ch_ptr_program_header_entry_num[2];
@@ -191,17 +192,25 @@ void execute_command(char** token_list){
 					// Close and reopen the file
 					fclose(file);		
 
+					file = fopen(token_list[1],"r");
+					fseek(file,0,SEEK_END);
+					long fsize = ftell(file);
+					rewind(file);
+
+					unsigned char *file_content = malloc(fsize+1);
+					fread(file_content,fsize,1,file);
+					fclose(file);
+
 					/*printf("Program header bytes:\n");
 					for(int i=0;i<program_header_entry_num * program_header_entry_size;i++){
 						printf(" %d: %x | ",i+64,program_header[i]);
 					}			
 
-					printf("\n\nTodo: Test for big endian files!\n");
+					/*printf("\n\nTodo: Test for big endian files!\n");
 					printf("Debug:\n");
 					for(int i=0;i<remaining_header_size;i++){ 
 						printf(" %d: %x|",i+6,remaining_header[i]);
 					}*/
-					printf("\n");
 				}
 
 			}
