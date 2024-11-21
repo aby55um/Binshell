@@ -119,6 +119,11 @@ void execute_command(char** token_list){
 					} else if(b32){
 						index = 29;
 					}
+					unsigned long long int section_header_table_offset = 0;
+					for(int i=0;i<address_size;i++){
+						section_header_table_offset += remaining_header[index-address_size+1+i]*pow(256,(long)i);
+					}
+					//printf("\n%lld\n",section_header_table_offset);
 					little_endian_read(remaining_header,index,address_size,0);
 
 					// Number of program header entries
