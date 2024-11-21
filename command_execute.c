@@ -163,6 +163,17 @@ void execute_command(char** token_list){
 					}
 					unsigned int program_header_entry_num = (unsigned int)remaining_header[index-6] + (unsigned int)remaining_header[index-7] * 256;
 
+					// Number of sectoin header entries
+					unsigned int section_header_entry_num = 0;
+					if(b64){
+						index = 55;
+					} else if(b32){
+						index = 42;
+					}
+					section_header_entry_num = remaining_header[index-1] + remaining_header[index]*256;
+					//printf("%d\n",section_header_entry_num);
+					//little_endian_read(remaining_header,index,2,1);
+
 					// Program header entry size
 					unsigned char ch_ptr_program_header_entry_size[2];
 					if(b64){
