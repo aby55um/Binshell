@@ -163,7 +163,7 @@ void execute_command(char** token_list){
 					}
 					unsigned int program_header_entry_num = (unsigned int)remaining_header[index-6] + (unsigned int)remaining_header[index-7] * 256;
 
-					// Number of sectoin header entries
+					// Number of section header entries
 					unsigned int section_header_entry_num = 0;
 					if(b64){
 						index = 55;
@@ -199,27 +199,29 @@ void execute_command(char** token_list){
 						break;
 					}
 
-					unsigned char *program_header = malloc(program_header_entry_num * program_header_entry_size * sizeof(char));
+					unsigned char *program_header = malloc(program_header_entry_num * program_header_entry_size * sizeof(unsigned char));
 					fgets(program_header, program_header_entry_num * program_header_entry_size ,file);
 
-					unsigned long long int section_types[program_header_entry_num];
-					unsigned long long int section_offset[program_header_entry_num];
+					unsigned long long int segment_types[program_header_entry_num];
+					unsigned long long int segment_offset[program_header_entry_num];
 					for(int i=0;i<program_header_entry_num;i++){
-						section_types[i]=0;
-						section_offset[i]=0;
+						segment_types[i]=0;
+						segment_offset[i]=0;
 					}
 
 					for(int i=0;i<program_header_entry_num;i++){
 						for(int j=0;j<4;j++){
-							section_types[i]+=program_header[program_header_entry_size*i+j]*pow(256,(double)j);
+							segment_types[i]+=program_header[program_header_entry_size*i+j]*(int)pow(256,(double)j);
+							//printf("%x   ",program_header[program_header_entry_size*i+j]);
 						}
-						//printf("First four bytes of the %d header entry: 0x%llx\n",i,section_types[i]);
+						//printf("\n");
+						printf("First four bytes of the %d header entry: 0x%llx\n",i,segment_types[i]);
 					}
 
 					// Close and reopen the file
 					fclose(file);		
 
-					file = fopen(token_list[1],"r");
+					/*FILE *file = fopen(token_list[1],"r");
 					fseek(file,0,SEEK_END);
 					long fsize = ftell(file);
 					rewind(file);
@@ -227,6 +229,14 @@ void execute_command(char** token_list){
 					unsigned char *file_content = malloc(fsize+1);
 					fread(file_content,fsize,1,file);
 					fclose(file);
+
+					// Section types
+					
+					for(int i=0;i<section_header_entry_num;i++){
+						for(int j=0;j<4;j++){
+
+						}
+					}
 
 					/*printf("Program header bytes:\n");
 					for(int i=0;i<program_header_entry_num * program_header_entry_size;i++){
