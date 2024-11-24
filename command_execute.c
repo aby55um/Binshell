@@ -221,10 +221,11 @@ void execute_command(char** token_list){
 					// Close and reopen the file
 					fclose(file);		
 
-					/*FILE *file = fopen(token_list[1],"r");
+					file = fopen(token_list[1],"r");
 					fseek(file,0,SEEK_END);
-					long fsize = ftell(file);
-					rewind(file);
+					/*long fsize = ftell(file);
+					//printf("%ld",fsize);
+					/*rewind(file);
 
 					unsigned char *file_content = malloc(fsize+1);
 					fread(file_content,fsize,1,file);
