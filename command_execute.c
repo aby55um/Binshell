@@ -56,7 +56,9 @@ void execute_command(char** token_list){
 			if(access(token_list[1],F_OK)==0){
 				FILE *file = fopen(token_list[1],"r");
 				unsigned char line[4];  
+				//unsigned char line[5];
 				fgets(line, sizeof(line)+1, file);
+				//fread(line,sizeof(line),1,file);
 				//Check if ELF file
 				if(line[0]==0x7f && line[1]=='E' && line[2]=='L' && line[3]=='F'){
 					printf("\nFile format: ELF\n");
@@ -87,6 +89,7 @@ void execute_command(char** token_list){
 					}
 					unsigned char *remaining_header = malloc(remaining_header_size * sizeof(char));
 					fgets(remaining_header, remaining_header_size + 1,file);
+					//fread(remaining_header, remaining_header_size, 1, file);
 
 					int index;
 
@@ -219,25 +222,27 @@ void execute_command(char** token_list){
 					}
 
 					// Close and reopen the file
-					fclose(file);		
+					//fclose(file);		
 
-					file = fopen(token_list[1],"r");
-					fseek(file,0,SEEK_END);
-					/*long fsize = ftell(file);
+					//file = fopen(token_list[1],"r");
+					//fseek(file,0,SEEK_END);
+					fseek(file, 0, SEEK_SET);
+					long fsize = ftell(file);
 					//printf("%ld",fsize);
-					/*rewind(file);
+					//rewind(file);
 
-					unsigned char *file_content = malloc(fsize+1);
-					fread(file_content,fsize,1,file);
-					fclose(file);
+					//unsigned char *file_content = malloc(fsize+1);
+					//fread(file_content,fsize,1,file);
+					//fread(file_content,1,1,file);
+					//fclose(file);
 
 					// Section types
 					
-					for(int i=0;i<section_header_entry_num;i++){
+					/*for(int i=0;i<section_header_entry_num;i++){
 						for(int j=0;j<4;j++){
 
 						}
-					}
+					}*/
 
 					/*printf("Program header bytes:\n");
 					for(int i=0;i<program_header_entry_num * program_header_entry_size;i++){
