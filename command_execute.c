@@ -58,8 +58,11 @@ void execute_command(char** token_list){
 				unsigned char line[4];  
 				//unsigned char line[5];
 				fgets(line, sizeof(line)+1, file);
+				//printf("line: %s",line);
 				//fread(line,sizeof(line),1,file);
+				//printf("line: %s", line);
 				//Check if ELF file
+				//printf("%c",line[0]);
 				if(line[0]==0x7f && line[1]=='E' && line[2]=='L' && line[3]=='F'){
 					printf("\nFile format: ELF\n");
 					//Check if 32 or 64 bit file
@@ -254,6 +257,9 @@ void execute_command(char** token_list){
 					for(int i=0;i<remaining_header_size;i++){ 
 						printf(" %d: %x|",i+6,remaining_header[i]);
 					}*/
+				}
+				if(line[0]==0x23 && line[1]==0x21){
+					printf("script");
 				}
 
 			}
