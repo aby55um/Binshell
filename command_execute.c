@@ -55,9 +55,11 @@ void execute_command(char** token_list){
 		{
 			if(access(token_list[1],F_OK)==0){
 				FILE *file = fopen(token_list[1],"r");
-				unsigned char line[4];  
+				unsigned char line[4];
+				//rewind(file);  
 				//unsigned char line[5];
 				fgets(line, sizeof(line)+1, file);
+				printf("first: %ld\n",ftell(file));
 				//printf("line: %s",line);
 				//fread(line,sizeof(line),1,file);
 				//printf("line: %s", line);
@@ -71,6 +73,7 @@ void execute_command(char** token_list){
 					int address_size;
 					char header_bytes[2];
 					fgets(header_bytes,3,file);
+					printf("second: %ld\n",ftell(file));
 					int remaining_header_size;
 					if(header_bytes[0]==1){
 						printf("32 bit\n");
@@ -92,6 +95,7 @@ void execute_command(char** token_list){
 					}
 					unsigned char *remaining_header = malloc(remaining_header_size * sizeof(char));
 					fgets(remaining_header, remaining_header_size + 1,file);
+					printf("third: %ld\n",ftell(file));
 					//fread(remaining_header, remaining_header_size, 1, file);
 
 					int index;
@@ -228,14 +232,15 @@ void execute_command(char** token_list){
 					//fclose(file);		
 
 					//file = fopen(token_list[1],"r");
-					//fseek(file,0,SEEK_END);
-					fseek(file, 0, SEEK_SET);
+					/*fseek(file,0,SEEK_END);
 					long fsize = ftell(file);
-					//printf("%ld",fsize);
+					fseek(file, 0, SEEK_SET);
+					printf("%ld",fsize);
 					//rewind(file);
 
-					//unsigned char *file_content = malloc(fsize+1);
-					//fread(file_content,fsize,1,file);
+					unsigned char *file_content = malloc(fsize+1);
+					fread(file_content,fsize,1,file);*/
+					fclose(file);
 					//fread(file_content,1,1,file);
 					//fclose(file);
 
