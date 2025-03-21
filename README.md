@@ -1,15 +1,15 @@
-Binshell
+# Binshell
 
 How to use:
 
-git clone https://github.com/aby55um/Binshell.git
+  git clone https://github.com/aby55um/Binshell.git
 
-cd Binshell
+  cd Binshell
 
-make
+  make
 
-./binshell
+  ./binshell
 
-analyze [elf file path]
+  analyze [elf file path]
 
-exit
+  exit
