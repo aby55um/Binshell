@@ -54,6 +54,16 @@ void execute_command(char** token_list){
 	case 2:
 		{
 			if(access(token_list[1],F_OK)==0){
+
+				//Test code, it breaks the program
+				FILE *test = fopen(token_list[1],"r");
+				fseek(test, 0, SEEK_END);
+				long file_size = ftell(test);
+				fseek(test, 0, SEEK_SET);
+				char *buffer = (char *)malloc(file_size + 1);
+				fread(buffer, 1, file_size, test);
+				//Test end
+
 				FILE *file = fopen(token_list[1],"r");
 				unsigned char line[4];
 				//rewind(file);  
