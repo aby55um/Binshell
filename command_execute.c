@@ -89,8 +89,14 @@ void execute_command(char** token_list){
 					little_endian_read(buffer, 35 + 12 * b64, 4 + 4 * b64, 0);
 					printf("Number of program header entries: ");
 					little_endian_read(buffer, 45 + 12 * b64, 2, 1);
+					printf("Program header table entry size: ");
+					int prog_header_table_entry_size = 16 * buffer[43 + 12 * b64] + buffer[42 + 12 * b64];
+					printf("%d\n", prog_header_table_entry_size);
 					printf("Number of section header entries: ");
 					little_endian_read(buffer, 49 + 12 * b64, 2, 1);
+					printf("Section header table entry size: ");
+					int section_header_table_entry_size = 16 * buffer[47 + 12 * b64] + buffer[46 + 12 * b64];
+					printf("%d\n", section_header_table_entry_size);
 					printf("Section index to the section header string table: 0x");
 					little_endian_read(buffer, 51 + 12 * b64, 2, 0);
 				}
