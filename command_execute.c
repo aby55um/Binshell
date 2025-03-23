@@ -55,21 +55,53 @@ void execute_command(char** token_list){
 		{
 			if(access(token_list[1],F_OK)==0){
 
-				//Test code, it breaks the program
-				FILE *test = fopen(token_list[1],"r");
-				fseek(test, 0, SEEK_END);
-				long file_size = ftell(test);
-				fseek(test, 0, SEEK_SET);
+				FILE *fl = fopen(token_list[1],"r");
+				fseek(fl, 0, SEEK_END);
+				long file_size = ftell(fl);
+				fseek(fl, 0, SEEK_SET);
 				char *buffer = (char *)malloc(file_size + 1);
-				fread(buffer, 1, file_size, test);
-				//Test end
+				fread(buffer, 1, file_size, fl);
+				fclose(fl);
 
-				FILE *file = fopen(token_list[1],"r");
+				int b64=0;
+
+				if(buffer[0]==0x7f && buffer[1]=='E' && buffer[2]=='L' && buffer[3]=='F'){
+					printf("\nFile format: ELF\n");
+					if(buffer[4]==1){
+						printf("32 bit\n");
+					}
+					if(buffer[4]==2){
+						printf("64 bit\n");
+						b64=1;
+					}
+					if(buffer[5]==1){
+						printf("Little endian\n");
+					}
+					if(buffer[5]==2){
+						printf("Big endian\n");
+						break;
+					}
+					printf("Program entry: 0x");
+					little_endian_read(buffer, 27 + 4 * b64, 4 + 4 * b64, 0);
+					printf("Program header table offset: 0x");
+					little_endian_read(buffer, 31 + 8 * b64, 4 + 4 * b64, 0);
+					printf("Section header table offset: 0x");
+					little_endian_read(buffer, 35 + 12 * b64, 4 + 4 * b64, 0);
+					printf("Number of program header entries: ");
+					little_endian_read(buffer, 45 + 12 * b64, 2, 1);
+					printf("Number of section header entries: ");
+					little_endian_read(buffer, 49 + 12 * b64, 2, 1);
+					printf("Section index to the section header string table: 0x");
+					little_endian_read(buffer, 51 + 12 * b64, 2, 0);
+				}
+
+				// Old code, to be deleted
+				/*FILE *file = fopen(token_list[1],"r");
 				unsigned char line[4];
 				//rewind(file);  
 				//unsigned char line[5];
 				fgets(line, sizeof(line)+1, file);
-				printf("first: %ld\n",ftell(file));
+				//printf("first: %ld\n",ftell(file));
 				//printf("line: %s",line);
 				//fread(line,sizeof(line),1,file);
 				//printf("line: %s", line);
@@ -78,7 +110,7 @@ void execute_command(char** token_list){
 				if(line[0]==0x7f && line[1]=='E' && line[2]=='L' && line[3]=='F'){
 					printf("\nFile format: ELF\n");
 					//Check if 32 or 64 bit file
-					int b64 = 0;
+					//int b64 = 0;
 					int b32 = 0;
 					int address_size;
 					char header_bytes[2];
@@ -250,7 +282,7 @@ void execute_command(char** token_list){
 
 					unsigned char *file_content = malloc(fsize+1);
 					fread(file_content,fsize,1,file);*/
-					fclose(file);
+					//fclose(file);
 					//fread(file_content,1,1,file);
 					//fclose(file);
 
@@ -271,11 +303,12 @@ void execute_command(char** token_list){
 					printf("Debug:\n");
 					for(int i=0;i<remaining_header_size;i++){ 
 						printf(" %d: %x|",i+6,remaining_header[i]);
-					}*/
-				}
-				if(line[0]==0x23 && line[1]==0x21){
+					}
+				}*/
+				
+				/*if(line[0]==0x23 && line[1]==0x21){
 					printf("script");
-				}
+				}*/
 
 			}
 			else{
