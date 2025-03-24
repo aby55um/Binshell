@@ -13,6 +13,8 @@ char command_list_string[] = "\nCommands:\n\nexit: exit shell\nhelp: print this 
 
 char* current_command;
 
+char* flags[8] = {"Access denied", "Execute", "Write", "Write, Execute", "Read", "Read, Execute", "Read, write", "Read, write, execute"};
+
 int translate_command(char* current_command){
 	for(int i=0;i<number_of_commands;i++){
 		if(!strcmp(commands[i],current_command)){
@@ -22,7 +24,7 @@ int translate_command(char* current_command){
 	return -1;
 }
 
-void little_endian_read(unsigned char* list,int index,int size, int format){
+void little_endian_read(unsigned char* list,int index,int size, int format, int newline){
 	int zero_byte = 0;
 	for(int i=0;i<size;i++){
 		if(list[index-i]!=0){
@@ -37,7 +39,27 @@ void little_endian_read(unsigned char* list,int index,int size, int format){
 			}
 		}
 	}
-	printf("\n");
+	if(!zero_byte){printf("0");}
+	if(newline){
+		printf("\n");
+	}
+	else {printf("\t");}
+}
+
+int segment_data_64(unsigned char* list, int index, int little_endian){
+	printf("Type: 0x");
+	little_endian_read(list, index + 3, 4, 0, 0);
+	printf("Flags: 0x");
+	little_endian_read(list, index + 7, 4, 0, 0);
+	printf("Segment offset in file: 0x");
+	little_endian_read(list, index + 15, 8, 0, 0);
+	printf("Segment size in file: ");
+	little_endian_read(list, index + 39, 8, 1, 0);
+	printf("Segment offset in memory: 0x");
+	little_endian_read(list, index + 23, 8, 0, 0);
+	printf("Segment size in memory: ");
+	little_endian_read(list, index + 47, 8, 1, 1);
+	return 0;
 }
 
 void execute_command(char** token_list){
@@ -82,9 +104,9 @@ void execute_command(char** token_list){
 						break;
 					}
 					printf("Program entry: 0x");
-					little_endian_read(buffer, 27 + 4 * b64, 4 + 4 * b64, 0);
+					little_endian_read(buffer, 27 + 4 * b64, 4 + 4 * b64, 0, 0);
 					printf("Program header table offset: 0x");
-					little_endian_read(buffer, 31 + 8 * b64, 4 + 4 * b64, 0);
+					little_endian_read(buffer, 31 + 8 * b64, 4 + 4 * b64, 0, 0);
 					int program_header_table_offset = 0;
 					for(int i=0;i < 4 + 4 * b64;i++){
 						program_header_table_offset += buffer[28 + 4 * b64 + i] * pow(16,(double)i);
@@ -92,29 +114,31 @@ void execute_command(char** token_list){
 					}
 					printf("%d",program_header_table_offset);
 					printf("Section header table offset: 0x");
-					little_endian_read(buffer, 35 + 12 * b64, 4 + 4 * b64, 0);
+					little_endian_read(buffer, 35 + 12 * b64, 4 + 4 * b64, 0, 1);
 					printf("Number of program header entries: ");
-					little_endian_read(buffer, 45 + 12 * b64, 2, 1);
+					little_endian_read(buffer, 45 + 12 * b64, 2, 1, 1);
 					int prog_header_entry_number = buffer[44 + 12 * b64] + 16 * buffer[45 + 12 * b64];
 					printf("Program header table entry size: ");
 					int prog_header_table_entry_size = 16 * buffer[43 + 12 * b64] + buffer[42 + 12 * b64];
 					printf("%d\n", prog_header_table_entry_size);
 					printf("Number of section header entries: ");
-					little_endian_read(buffer, 49 + 12 * b64, 2, 1);
+					little_endian_read(buffer, 49 + 12 * b64, 2, 1, 1);
 					printf("Section header table entry size: ");
 					int section_header_table_entry_size = 16 * buffer[47 + 12 * b64] + buffer[46 + 12 * b64];
 					printf("%d\n", section_header_table_entry_size);
 					printf("Section index to the section header string table: 0x");
-					little_endian_read(buffer, 51 + 12 * b64, 2, 0);
+					little_endian_read(buffer, 51 + 12 * b64, 2, 0, 1);
 
 					/*printf("First program header: ");
 					for(int i=0;i<prog_header_table_entry_size;i++){
 						printf("%d ",buffer[program_header_table_offset + i]);
 					}*/
 
-					printf("Segment types:\n");
+					printf("\n\nSegment data:\n");
 					for(int i=0;i<prog_header_entry_number;i++){
-						little_endian_read(buffer, program_header_table_offset + i * prog_header_table_entry_size + 2, 3, 0);
+						//little_endian_read(buffer, program_header_table_offset + i * prog_header_table_entry_size + 2, 3, 0);
+						printf("%d   ",i+1);
+						segment_data_64(buffer, program_header_table_offset + i * prog_header_table_entry_size, 1);
 					}
 				}
 
