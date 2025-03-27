@@ -51,6 +51,14 @@ void little_endian_read(unsigned char* list,int index,int size, int format, int 
 	else {printf("\t");}
 }
 
+int little_endian_calc(unsigned char* list, int index, int size){
+	int sum = 0;
+	for(int i=0;i<size;i++){
+		sum += list[index - size + 1 + i] * pow(256,(double)i); 
+	}	
+	return sum;
+}
+
 int segment_data_64(unsigned char* list, int index, int little_endian){
 	printf("Type: 0x");
 	little_endian_read(list, index + 3, 4, 0, 0);
@@ -114,7 +122,7 @@ void execute_command(char** token_list){
 					little_endian_read(buffer, 31 + 8 * b64, 4 + 4 * b64, 0, 1);
 					int program_header_table_offset = 0;
 					for(int i=0;i < 4 + 4 * b64;i++){
-						program_header_table_offset += buffer[28 + 4 * b64 + i] * pow(16,(double)i);
+						program_header_table_offset += buffer[28 + 4 * b64 + i] * pow(256,(double)i);
 						//printf("%d\n",buffer[28 + 4 * b64 +i]);
 					}
 					//printf("%d",program_header_table_offset);
