@@ -126,8 +126,9 @@ void execute_command(char** token_list){
 						//printf("%d\n",buffer[28 + 4 * b64 +i]);
 					}
 					//printf("%d",program_header_table_offset);
-					printf("Section header table offset: 0x");
-					little_endian_read(buffer, 35 + 12 * b64, 4 + 4 * b64, 0, 1);
+					int section_header_table_offset = little_endian_calc(buffer, 35+12*b64, 4+4*b64);
+					printf("Section header table offset: 0x%x\n",section_header_table_offset);
+					//little_endian_read(buffer, 35 + 12 * b64, 4 + 4 * b64, 0, 1);
 					printf("Number of program header entries: ");
 					//little_endian_read(buffer, 45 + 12 * b64, 2, 0, 1);
 					int prog_header_entry_number = buffer[44 + 12 * b64] + 16 * buffer[45 + 12 * b64];
@@ -135,8 +136,9 @@ void execute_command(char** token_list){
 					printf("Program header table entry size: ");
 					int prog_header_table_entry_size = 16 * buffer[43 + 12 * b64] + buffer[42 + 12 * b64];
 					printf("%d\n", prog_header_table_entry_size);
-					printf("Number of section header entries: 0x");
-					little_endian_read(buffer, 49 + 12 * b64, 2, 0, 1);
+					int section_header_entry_number = little_endian_calc(buffer, 49+12*b64,2);
+					printf("Number of section header entries: %d\n",section_header_entry_number);
+					//little_endian_read(buffer, 49 + 12 * b64, 2, 0, 1);
 					printf("Section header table entry size: ");
 					int section_header_table_entry_size = 16 * buffer[47 + 12 * b64] + buffer[46 + 12 * b64];
 					printf("%d\n", section_header_table_entry_size);
@@ -149,6 +151,12 @@ void execute_command(char** token_list){
 						printf("%d   ",i+1);
 						segment_data_64(buffer, program_header_table_offset + i * prog_header_table_entry_size, 1);
 					}
+
+					printf("\n\nSection data:\n");
+					for(int i=0;i<section_header_entry_number;i++){
+						little_endian_read(buffer, section_header_table_offset + i * section_header_table_entry_size + 7,4,0,1);
+					}
+
 				}
 
 				// Old code, to be deleted
