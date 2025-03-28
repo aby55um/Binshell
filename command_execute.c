@@ -75,6 +75,17 @@ int segment_data_64(unsigned char* list, int index, int little_endian){
 	return 0;
 }
 
+int section_data_64(unsigned char* list, int index, int little_endian){
+	printf("Name index: %d\t",little_endian_calc(list, index + 3, 4));
+	printf("Type: 0x");
+	little_endian_read(list, index + 7, 4, 0, 0);
+	printf("Memory address: 0x");
+	little_endian_read(list, index + 23, 8, 0, 0);
+	printf("File offset: 0x");
+	little_endian_read(list, index + 31, 8, 0, 0);
+	printf("Size in file: %d\n",little_endian_calc(list, index + 39, 8));
+}
+
 void execute_command(char** token_list){
 	current_command = token_list[0];
 	switch(translate_command(current_command)){
@@ -99,6 +110,8 @@ void execute_command(char** token_list){
 				fclose(fl);
 
 				int b64=0;
+
+				printf("File size: %ld\n",file_size);
 
 				if(buffer[0]==0x7f && buffer[1]=='E' && buffer[2]=='L' && buffer[3]=='F'){
 					printf("\nFile format: ELF\n");
@@ -142,8 +155,10 @@ void execute_command(char** token_list){
 					printf("Section header table entry size: ");
 					int section_header_table_entry_size = 16 * buffer[47 + 12 * b64] + buffer[46 + 12 * b64];
 					printf("%d\n", section_header_table_entry_size);
-					printf("Section index to the section header string table: 0x");
-					little_endian_read(buffer, 51 + 12 * b64, 2, 0, 1);
+					//printf("Section index to the section header string table: 0x");
+					int string_table_index = little_endian_calc(buffer, 51 + 12 * b64, 2);
+					//little_endian_read(buffer, 51 + 12 * b64, 2, 0, 1);
+					printf("Section index to the section header string table: %d\n",string_table_index);
 
 					printf("\n\nSegment data:\n");
 					for(int i=0;i<prog_header_entry_number;i++){
@@ -151,11 +166,41 @@ void execute_command(char** token_list){
 						printf("%d   ",i+1);
 						segment_data_64(buffer, program_header_table_offset + i * prog_header_table_entry_size, 1);
 					}
+					printf("\n\n");
+
+					/*printf("String table: ");
+					for(int i=0;i<1000;i++){
+						printf("%c",buffer[section_header_table_offset + 0 * section_header_table_entry_size + i]);
+					}*/
+
+					//printf("string")
+
+					/*printf("\n\nSection data:\n");
+					for(int i=0;i<section_header_entry_number;i++){
+						little_endian_read(buffer, section_header_table_offset + i * section_header_table_entry_size + 7,4,0,0);
+					}
+					printf("\n");*/
 
 					printf("\n\nSection data:\n");
 					for(int i=0;i<section_header_entry_number;i++){
-						little_endian_read(buffer, section_header_table_offset + i * section_header_table_entry_size + 7,4,0,1);
+						printf("%d    ",i+1);
+						section_data_64(buffer, section_header_table_offset + i * section_header_table_entry_size, 1);
 					}
+
+					int string_count = 0;
+					//printf("%d: ",string_count);
+					for(int i=19064;i<19064 + 1075;i++){
+						printf("%c",buffer[i]);
+						if(buffer[i]==0 && buffer[i+1]!=0){
+							string_count++;
+							printf("\n%d: ",string_count);
+						}
+					}
+					printf("\n");
+
+					/*for(int i=0;i<file_size;i++){
+						printf("%d:  %d,  ",i,buffer[i]);
+					}*/
 
 				}
 
