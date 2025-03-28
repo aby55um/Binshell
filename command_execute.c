@@ -77,6 +77,28 @@ int segment_data_64(unsigned char* list, int index, int little_endian){
 
 int section_data_64(unsigned char* list, int index, int little_endian){
 	printf("Name index: %d\t",little_endian_calc(list, index + 3, 4));
+	printf("Name: ");
+	int x=0;
+	char y = 
+		list[little_endian_calc(
+			list,
+			little_endian_calc(list, 47, 8) 
+			+ little_endian_calc(list, 63, 2) * (16 * list[59] + list[58]) 
+			+ 31,
+			8 
+		) + little_endian_calc(list, index + 3, 4) + x]; 
+	while(y!=0){
+		printf("%c",y);
+		x++;
+		y=list[little_endian_calc(
+			list,
+			little_endian_calc(list, 47, 8) 
+			+ little_endian_calc(list, 63, 2) * (16 * list[59] + list[58]) 
+			+ 31,
+			8 
+		) + little_endian_calc(list, index + 3, 4) + x]; 
+	}
+	printf("\t");
 	printf("Type: 0x");
 	little_endian_read(list, index + 7, 4, 0, 0);
 	printf("Memory address: 0x");
@@ -187,6 +209,7 @@ void execute_command(char** token_list){
 						section_data_64(buffer, section_header_table_offset + i * section_header_table_entry_size, 1);
 					}
 
+					/*
 					int string_count = 0;
 					//printf("%d: ",string_count);
 					for(int i=19064;i<19064 + 1075;i++){
@@ -196,10 +219,27 @@ void execute_command(char** token_list){
 							printf("\n%d: ",string_count);
 						}
 					}
-					printf("\n");
+					printf("\n");*/
 
 					/*for(int i=0;i<file_size;i++){
 						printf("%d:  %d,  ",i,buffer[i]);
+					}*/
+
+					printf("\n\nStrings:\n");
+					for(int i=0;i<section_header_entry_number;i++){
+						if(little_endian_calc(buffer, section_header_table_offset + i * section_header_table_entry_size + 7, 4) == 3){
+							for(int j=0;j<little_endian_calc(buffer, section_header_table_offset + i * section_header_table_entry_size + 39,8);j++){
+								printf("%c",buffer[little_endian_calc(buffer, section_header_table_offset + i * section_header_table_entry_size + 31,8) + j]);
+								if(buffer[little_endian_calc(buffer, section_header_table_offset + i * section_header_table_entry_size + 31,8) + j] == 0){
+									printf("\n");
+								}
+							}
+						}
+					}
+					printf("\n");
+
+					/*for(int i=20139;i<20139 + 282;i++){
+						printf("%c",buffer[i]);
 					}*/
 
 				}
