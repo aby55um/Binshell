@@ -238,6 +238,75 @@ void execute_command(char** token_list){
 					}
 					printf("\n");
 
+					//Only works for 64-bit little endian
+					int elf_block_count = prog_header_entry_number + section_header_entry_number + 3;
+					int elf_blocks[elf_block_count], elf_block_sizes[elf_block_count], elf_blocks_mem[elf_block_count], elf_blocks_mem_size[elf_block_count];
+					//elf_blocks = malloc(elf_block_count*sizeof(int));
+					//elf_block_sizes = malloc(elf_block_count*sizeof(int));
+
+					elf_blocks[0] = 0;
+					elf_block_sizes[0] = 64;
+					// not sure what this is
+					elf_blocks_mem[0] = 0;
+					elf_blocks_mem_size[0] = 0;
+
+					elf_blocks[1] = program_header_table_offset;
+					elf_block_sizes[1] = prog_header_entry_number * prog_header_table_entry_size;
+					// not sure what this is
+					elf_blocks_mem[1] = 0;
+					elf_blocks_mem_size[1] = 0;
+
+					elf_blocks[2] = section_header_table_offset;
+					elf_block_sizes[2] = section_header_entry_number * section_header_table_entry_size;
+					elf_blocks_mem[2] = 0;
+					elf_blocks_mem_size[2] = 0;
+
+					for(int i=3;i<3+prog_header_entry_number;i++){
+						elf_blocks[i] = little_endian_calc(buffer, program_header_table_offset + (i-3) * prog_header_table_entry_size + 15, 8);
+						elf_block_sizes[i] = little_endian_calc(buffer, program_header_table_offset + (i-3) * prog_header_table_entry_size + 39, 8);
+						elf_blocks_mem[i] = little_endian_calc(buffer, program_header_table_offset + (i-3) * prog_header_table_entry_size + 23, 8);
+						elf_blocks_mem_size[i] = little_endian_calc(buffer, program_header_table_offset + (i-3) * prog_header_table_entry_size + 47, 8);
+					}
+
+					for(int i=3+prog_header_entry_number;i<3+prog_header_entry_number+section_header_entry_number;i++){
+						elf_blocks[i] = 
+						little_endian_calc(buffer, section_header_table_offset + (i-3-prog_header_entry_number) * section_header_table_entry_size + 31, 8);
+						elf_block_sizes[i] = 
+						little_endian_calc(buffer, section_header_table_offset + (i-3-prog_header_entry_number) * section_header_table_entry_size + 39, 8);
+						elf_blocks_mem[i] =
+						little_endian_calc(buffer, section_header_table_offset + (i-3-prog_header_entry_number) * section_header_table_entry_size + 23, 8);
+						elf_blocks_mem_size[i] =
+						little_endian_calc(buffer, section_header_table_offset + (i-3-prog_header_entry_number) * section_header_table_entry_size + 39, 8);
+					}
+
+
+					printf("----Block-----File offset------------Memory address------------------------------\n");
+					printf("ELF header: 0x%x - 0x%x\n",elf_blocks[0],elf_blocks[0] + elf_block_sizes[0]-1);
+					printf("Program header: 0x%x - 0x%x\n",elf_blocks[1],elf_blocks[1] + elf_block_sizes[1]-1);
+					printf("Section header: 0x%x - 0x%x\n",elf_blocks[2],elf_blocks[2] + elf_block_sizes[2]-1);
+
+					for(int i=3;i<prog_header_entry_number + 3;i++){
+						printf("Segment: 0x%x - 0x%x          0x%x - 0x%x\n", 
+							elf_blocks[i],
+							elf_blocks[i] + elf_block_sizes[i]-1 >= 0 ? elf_blocks[i],elf_blocks[i] + elf_block_sizes[i]-1 : 0,
+							elf_blocks_mem[i],
+							elf_blocks_mem[i] + elf_blocks_mem_size[i] - 1 >= 0 ? elf_blocks_mem[i] + elf_blocks_mem_size[i] - 1 : 0
+							);	
+					}
+
+					for(int i=3+prog_header_entry_number;i<3+prog_header_entry_number+section_header_entry_number;i++){
+						printf("Section: 0x%x - 0x%x        0x%x - 0x%x\n",
+							elf_blocks[i],
+							elf_blocks[i]+elf_block_sizes[i]-1>=0 ? elf_blocks[i],elf_blocks[i]+elf_block_sizes[i]-1 : 0,
+							elf_blocks_mem[i],
+							elf_blocks_mem[i]+elf_blocks_mem_size[i]-1>=elf_blocks_mem[i] ? elf_blocks_mem[i]+elf_blocks_mem_size[i]-1 : elf_blocks_mem[i]
+							);
+					}
+
+					/*for(int i=0xb20;i<0x1000;i++){
+						printf("%x",buffer[i]);
+					}*/
+
 					/*for(int i=20139;i<20139 + 282;i++){
 						printf("%c",buffer[i]);
 					}*/
