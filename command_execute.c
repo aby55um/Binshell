@@ -303,6 +303,35 @@ void execute_command(char** token_list){
 							);
 					}
 
+					printf("\n\nELF Block details: \n");
+					printf("Segments\n");
+					for(int i=0;i<prog_header_entry_number;i++){
+						printf("Segment header %d\n",i);
+						for(int j=0;j<prog_header_table_entry_size;j++){
+							printf("%x ",buffer[program_header_table_offset + i * prog_header_table_entry_size + j]);
+						}
+						printf("\n");
+						printf("Segment %d\n",i);
+						for(int j=0;j<little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 39, 8);j++){
+							printf("%x ", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
+						}
+						printf("\n\n");
+					}
+
+					printf("\nSections\n");
+					for(int i=0;i<section_header_entry_number;i++){
+						printf("Section header %d\n", i);
+						for(int j=0;j<section_header_table_entry_size;j++){
+							printf("%x ",buffer[section_header_table_offset + i * section_header_table_entry_size + j]);
+						}
+						printf("\n");
+						printf("Section %d\n",i);
+						for(int j=0;j<little_endian_calc(buffer, section_header_table_offset + i * section_header_table_entry_size + 39, 8);j++){
+							printf("%x ",buffer[little_endian_calc(buffer, section_header_table_offset + i * section_header_table_entry_size + 31, 8) + j]);
+						}
+						printf("\n\n");
+					}
+
 					/*for(int i=0xb20;i<0x1000;i++){
 						printf("%x",buffer[i]);
 					}*/
