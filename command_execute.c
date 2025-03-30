@@ -313,7 +313,15 @@ void execute_command(char** token_list){
 						printf("\n");
 						printf("Segment %d\n",i);
 						for(int j=0;j<little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 39, 8);j++){
-							printf("%x ", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
+							switch(little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 3, 4)){
+							//case 4:
+							case 3:
+								printf("%c", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
+								break;
+							default:
+								printf("%x ", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
+							}
+							//printf("%x ", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
 						}
 						printf("\n\n");
 					}
