@@ -238,6 +238,7 @@ void execute_command(char** token_list){
 					}
 					printf("\n");
 
+					if(b64!=1){break;}
 					//Only works for 64-bit little endian
 					int elf_block_count = prog_header_entry_number + section_header_entry_number + 3;
 					int elf_blocks[elf_block_count], elf_block_sizes[elf_block_count], elf_blocks_mem[elf_block_count], elf_blocks_mem_size[elf_block_count];
