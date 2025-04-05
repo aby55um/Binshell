@@ -238,7 +238,7 @@ void execute_command(char** token_list){
 					}
 					printf("\n");
 
-					if(b64!=1){break;}
+					if(b64!=1){printf("Not a 64-bit file");}
 					//Only works for 64-bit little endian
 					int elf_block_count = prog_header_entry_number + section_header_entry_number + 3;
 					int elf_blocks[elf_block_count], elf_block_sizes[elf_block_count], elf_blocks_mem[elf_block_count], elf_blocks_mem_size[elf_block_count];
@@ -307,7 +307,11 @@ void execute_command(char** token_list){
 					printf("\n\nELF Block details: \n");
 					printf("Segments\n");
 					for(int i=0;i<prog_header_entry_number;i++){
-						printf("Segment header %d\n",i);
+						printf("Segment header %d",i);
+						if(little_endian_calc(buffer,program_header_table_offset + i * prog_header_table_entry_size + 7,4) % 2 == 1){
+							printf("    [executable segment]");
+						}
+						printf("\n");
 						for(int j=0;j<prog_header_table_entry_size;j++){
 							printf("%x ",buffer[program_header_table_offset + i * prog_header_table_entry_size + j]);
 						}
