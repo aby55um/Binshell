@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#include <capstone/capstone.h>
 #include "variables.h"
 
 #define number_of_commands 3
