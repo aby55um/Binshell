@@ -327,8 +327,8 @@ void execute_command(char** token_list){
 								CODE[4 * j + 1] = 'x';
 								CODE[4 * j + 2] = (char)(buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]/16);
 								CODE[4 * j + 3] = (char)(buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]%16);*/
-								sprintf(CODE, "\\x%02x", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
-								CODE += 4;
+								sprintf(CODE + 4*j, "\\x%02x", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
+								//CODE += 4;
 							}
 							/*for(int u=0;u<sizeof(CODE);u++){
 								printf("%c",CODE[u]);
