@@ -6,6 +6,10 @@
 #include <capstone/capstone.h>
 #include "variables.h"
 
+//test
+//#define CODE "\x55\x48\x8b\x05\xb8\x13\x00\x00"
+//Todo: make the disassemble work
+
 #define number_of_commands 3
 
 char* commands[] = {"exit", "help", "analyze"};
@@ -310,7 +314,40 @@ void execute_command(char** token_list){
 					for(int i=0;i<prog_header_entry_number;i++){
 						printf("Segment header %d",i);
 						if(little_endian_calc(buffer,program_header_table_offset + i * prog_header_table_entry_size + 7,4) % 2 == 1){
-							printf("    [executable segment]");
+							printf("    [executable segment]\n\n");
+							csh handle;
+							cs_insn *insn;
+							size_t cnt;
+
+							char *CODE = 
+							malloc((little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 39, 8)) * 4 + 1);
+							//printf("%d\n",little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 39, 8));
+							for(int j=0;j<little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 39, 8);j++){
+								/*CODE[4 * j] = '\\';
+								CODE[4 * j + 1] = 'x';
+								CODE[4 * j + 2] = (char)(buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]/16);
+								CODE[4 * j + 3] = (char)(buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]%16);*/
+								sprintf(CODE, "\\x%02x", buffer[little_endian_calc(buffer, program_header_table_offset + i * prog_header_table_entry_size + 15, 8)+j]);
+								CODE += 4;
+							}
+							/*for(int u=0;u<sizeof(CODE);u++){
+								printf("%c",CODE[u]);
+							}*/
+							printf("%s\n",CODE);
+
+							if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK){
+								printf("Executable failed to open by Capstone");
+							}
+							cnt = cs_disasm(handle, CODE, sizeof(CODE)-1, 0X0000, 0, &insn);
+							if (cnt > 0){
+								size_t m;
+								for(m = 0; m < cnt; m++){
+									printf("0x%"PRIx64":\t%s\t\t%s\n", insn[m].address, insn[m].mnemonic,insn[m].op_str);
+								}
+								cs_free(insn, cnt);
+							} else printf("ERROR: Failed to disassemble given code!\n");
+
+							cs_close(&handle);
 						}
 						printf("\n");
 						for(int j=0;j<prog_header_table_entry_size;j++){
